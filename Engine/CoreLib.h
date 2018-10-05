@@ -1,4 +1,5 @@
 #pragma once
+#include "LinkList.h"
 
 namespace EngineLib 
 {
@@ -34,4 +35,6 @@ namespace EngineLib
 
 		bool operator==(const Point2D & V) const;
 	};
+
+
 }

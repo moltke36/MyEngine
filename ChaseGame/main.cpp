@@ -10,11 +10,12 @@ const int BOUNDARY = 50;
 // fields
 bool gameOver = false;
 int monsterCount;
-char** NameOfMonsters;
+EngineLib::list<char*>* NameOfMonsters;
+EngineLib::Node<char*>* MonsterNameNode;
 char* myName = new char[64];
 EngineLib::Point2D  playerPosition(0);
 int** monsterPosition;
-int* monsterLifeTime;
+EngineLib::list<int>* MonsterLifeTime;
 int newMonsterCount;
 
 // Methods
@@ -39,27 +40,31 @@ int main()
 			printf("Invalid Input! Please enter a number.\n");
 	} while (monsterCount <= 0);
 	//_CrtSetBreakAlloc(73);
-	NameOfMonsters = new char*[monsterCount]();
-	monsterLifeTime = new int[monsterCount]();
+	NameOfMonsters = new EngineLib::list<char*>();
+	//NameOfMonsters = new char*[monsterCount]();
+	MonsterLifeTime = new EngineLib::list<int>();
+	//monsterLifeTime = new int[monsterCount]();
+	MonsterNameNode = NameOfMonsters->Gethead();
 	for (int i = 0; i < monsterCount; i++)
 	{
+		char* temp = new char[64];
 		//cout << "Input the no." << i << " monster's name: "<<endl;
 		printf("Input the no.%d monster's name: ", i);
-
-		NameOfMonsters[i] = new char[64]();
-		monsterLifeTime[i] = rand() % 10 + 5;	// life time will be random from 5 to 15
-		gets_s(NameOfMonsters[i], 64);
+		
+		MonsterLifeTime->InsertList(rand() % 10 + 5);	// life time will be random from 5 to 15
+		gets_s(temp, 64);
 		//getchar();
-
+		NameOfMonsters->InsertList(temp);
 		//printf("Monster Name: %s \n", NameOfMonsters[i]);
-
 	}
+
 	// display all monsters' name
 	printf("You get ");
-	for (size_t i = 0; i < monsterCount; i++)
+	MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
+	for (MonsterNameNode; MonsterNameNode != nullptr; MonsterNameNode = MonsterNameNode->Next)
 	{
 		// print all name in the console
-		printf("%s ", NameOfMonsters[i]);
+		printf("%s ", MonsterNameNode->Data);
 	}
 	printf(", totally %d monsters in the scene.\nPlease input your name: ", monsterCount);
 	gets_s(myName, 64);
@@ -92,11 +97,11 @@ int main()
 			for (size_t i = 0; i < monsterCount; i++)
 			{
 				delete[] monsterPosition[i];
- 				delete[] NameOfMonsters[i];
+ 				delete[] NameOfMonsters;
 			}
 			delete [] monsterPosition;
 			delete [] NameOfMonsters;
-			delete [] monsterLifeTime;
+			delete [] MonsterLifeTime;
 			printf("\nYou die at (%d, %d), please press 'q' to quit\n", playerPosition.X, playerPosition.Y);
 			c = gets_s(tempInput, 5)[0];
 			if (c != 'q') {
@@ -106,7 +111,6 @@ int main()
 			delete[] tempInput;
 			//delete playerPosition;
 			_CrtDumpMemoryLeaks();
-
 		}
 
 		//printf("You input: %c", c);
@@ -128,9 +132,11 @@ void InitMonsters() {
 }
 void PrintPositionInfo() {
 	printf("You are in (%d,%d). Monsters ara in: \n", playerPosition.X, playerPosition.Y);
+	MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
 	for (size_t i = 0; i < monsterCount; i++)
 	{
-		printf("%s: (%d, %d) ", NameOfMonsters[i], monsterPosition[i][0], monsterPosition[i][1]);
+
+		printf("%s: (%d, %d) ", MonsterNameNode->Data, monsterPosition[i][0], monsterPosition[i][1]);
 		if (i == monsterCount - 1)
 			printf("\n");
 	}
@@ -168,12 +174,15 @@ void UpdateMovement(char input) {
 	CheckCollision();
 	if (!gameOver) {
 		// update monster position
+		EngineLib::Node<int>* LifeTimeNode = MonsterLifeTime->Gethead();
+		MonsterNameNode = NameOfMonsters->Gethead();
 		for (int i = 0; i < monsterCount; i++)
 		{
 			int deltaX = playerPosition.X - monsterPosition[i][0];
 			int deltaY = playerPosition.Y - monsterPosition[i][1];
-			if (monsterLifeTime[i] > 0) {
-				monsterLifeTime[i] --;
+			if (LifeTimeNode->Data > 0) {
+				LifeTimeNode->Data--;
+				LifeTimeNode = LifeTimeNode->Next;
 
 				if (abs(deltaX) >= abs(deltaY)) {
 					if (deltaX > 0)
@@ -191,11 +200,15 @@ void UpdateMovement(char input) {
 			}
 			else
 			{
-				printf("\nMonster %s died!\n", NameOfMonsters[i]);
+				printf("\nMonster %s died!\n", MonsterNameNode->Data);
 				delete[] monsterPosition[i];
 				GenerateNewMonster(i);
 			}
-
+			if (MonsterNameNode->Next != nullptr)
+			{
+				MonsterNameNode = MonsterNameNode->Next;
+			}
+			
 		}
 
 		CheckCollision();
@@ -205,19 +218,21 @@ void UpdateMovement(char input) {
 
 void GenerateNewMonster(int _i) {
 
-
+	char* temp = new char[64];
 	// new life time
-	monsterLifeTime[_i] = rand() % 10 + 5;
+	MonsterLifeTime->InsertList(rand() % 10 + 5);
 	// new respawn name
-	sprintf_s(NameOfMonsters[_i], 64, "NewMonster%d", newMonsterCount);
+	sprintf_s(temp, 64, "NewMonster%d", newMonsterCount);
+	NameOfMonsters->InsertList(temp);
 	// init X pos
 	monsterPosition[_i][0] = rand() % BOUNDARY - BOUNDARY / 2;
 	// init Y pos
 	monsterPosition[_i][1] = rand() % BOUNDARY - BOUNDARY / 2;
 
 
-	printf("New Monster: %s appears!\n\n", NameOfMonsters[_i]);
+	printf("New Monster: %s appears!\n\n", temp);
 	newMonsterCount++;
+	delete[] temp;
 }
 
 void CheckCollision() {
