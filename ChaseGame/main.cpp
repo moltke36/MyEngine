@@ -4,6 +4,7 @@
 #include <stdlib.h> 
 #include <CoreLib.h>
 #include <crtdbg.h>
+#include <string>
 
 // const
 const int BOUNDARY = 50;
@@ -47,14 +48,22 @@ int main()
 	MonsterNameNode = NameOfMonsters->Gethead();
 	for (int i = 0; i < monsterCount; i++)
 	{
-		char* temp = new char[64];
+		char* temp= new char[256];
+		
 		//cout << "Input the no." << i << " monster's name: "<<endl;
 		printf("Input the no.%d monster's name: ", i);
-		
+
+
 		MonsterLifeTime->InsertList(rand() % 10 + 5);	// life time will be random from 5 to 15
-		gets_s(temp, 64);
+		gets_s(temp, 128);
+		printf("%d\n", sizeof(temp));
+		char* tempcopy = new char[strlen(temp)];
+		strcpy_s(tempcopy, strlen(temp)+2,temp);
+		printf("%d\n",sizeof(tempcopy));
 		//getchar();
-		NameOfMonsters->InsertList(temp);
+		NameOfMonsters->InsertList(tempcopy);
+		delete[] temp;
+
 		//printf("Monster Name: %s \n", NameOfMonsters[i]);
 	}
 
