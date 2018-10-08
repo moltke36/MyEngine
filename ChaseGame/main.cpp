@@ -69,17 +69,19 @@ int main()
 			CurrentPosition++;
 			printf("read: %c\n", tempchar);
 		}
-		char* tempcopy = new char[CurrentPosition-1];
-		for (int i = 0; i < CurrentPosition+1; i++)
+		char *tempcopy = new char[CurrentPosition];
+		printf("%d", strlen(tempcopy));
+		for (int i = 0; i < CurrentPosition; i++)
 		{
 			tempcopy[i] = temp[i];
 		}
+		tempcopy[CurrentPosition] = '\0';
 		delete[] temp;
 		//gets_s(temp, 128);
 		//char* tempcopy = new char[strlen(temp)];
 		//strcpy_s(tempcopy, strlen(temp)+2,temp);
 		
-		NameOfMonsters->InsertList(tempcopy);
+			NameOfMonsters->InsertList(tempcopy);
 		printf("temp: %s\n", tempcopy);
 		//printf("size: %d\n", sizeof(temp));
 		//delete[] temp;
@@ -126,7 +128,6 @@ int main()
 			for (size_t i = 0; i < monsterCount; i++)
 			{
 				delete[] monsterPosition[i];
- 				delete[] NameOfMonsters;
 			}
 			delete [] monsterPosition;
 			delete [] NameOfMonsters;
