@@ -21,6 +21,7 @@ int newMonsterCount;
 
 // Methods
 void InitMonsters();
+char* DoubleSizeBlock(int &InitilizeSize, int CurrentPosition, char * temp);
 void PrintPositionInfo();
 void UpdateMovement(char input);
 void GenerateNewMonster(int _i);
@@ -34,7 +35,6 @@ int main()
 	printf("The number of initial monsters you want : \n");
 	do
 	{
-
 		scanf_s("%d", &monsterCount);
 		getchar();
 		if (monsterCount <= 0)
@@ -48,21 +48,41 @@ int main()
 	MonsterNameNode = NameOfMonsters->Gethead();
 	for (int i = 0; i < monsterCount; i++)
 	{
-		char* temp= new char[256];
-		
+
 		//cout << "Input the no." << i << " monster's name: "<<endl;
 		printf("Input the no.%d monster's name: ", i);
 
 
 		MonsterLifeTime->InsertList(rand() % 10 + 5);	// life time will be random from 5 to 15
-		gets_s(temp, 128);
-		printf("%d\n", sizeof(temp));
-		char* tempcopy = new char[strlen(temp)];
-		strcpy_s(tempcopy, strlen(temp)+2,temp);
-		printf("%d\n",sizeof(tempcopy));
-		//getchar();
-		NameOfMonsters->InsertList(tempcopy);
+		int CurrentPosition = 0;
+		int InitilizeSize = 2;
+		char* temp = new char[InitilizeSize+1];
+		char tempchar;
+		while ((tempchar = getchar()) != '\n') // read char for each letter
+		{
+			if (CurrentPosition == InitilizeSize)
+			{
+				InitilizeSize *= 2;
+				temp = DoubleSizeBlock(InitilizeSize, CurrentPosition, temp);  // double the size of the block
+			}
+			temp[CurrentPosition] = tempchar;
+			CurrentPosition++;
+			printf("read: %c\n", tempchar);
+		}
+		char* tempcopy = new char[CurrentPosition-1];
+		for (int i = 0; i < CurrentPosition+1; i++)
+		{
+			tempcopy[i] = temp[i];
+		}
 		delete[] temp;
+		//gets_s(temp, 128);
+		//char* tempcopy = new char[strlen(temp)];
+		//strcpy_s(tempcopy, strlen(temp)+2,temp);
+		
+		NameOfMonsters->InsertList(tempcopy);
+		printf("temp: %s\n", tempcopy);
+		//printf("size: %d\n", sizeof(temp));
+		//delete[] temp;
 
 		//printf("Monster Name: %s \n", NameOfMonsters[i]);
 	}
@@ -125,6 +145,18 @@ int main()
 		//printf("You input: %c", c);
 	} while (c != 'q');
 
+}
+
+char* DoubleSizeBlock(int &InitilizeSize, int CurrentPosition, char* SourceChar)
+{
+	char* temp2 = new char[InitilizeSize+1];
+	for (int i = 0; i < CurrentPosition; i++)
+	{
+		temp2[i] = SourceChar[i];
+	}
+	delete[] SourceChar;
+	printf("size: %d\n", strlen(temp2));
+	return temp2;
 }
 
 void InitMonsters() {
