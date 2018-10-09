@@ -67,10 +67,8 @@ int main()
 			}
 			temp[CurrentPosition] = tempchar;
 			CurrentPosition++;
-			printf("read: %c\n", tempchar);
 		}
 		char *tempcopy = new char[CurrentPosition];
-		printf("%d", strlen(tempcopy));
 		for (int i = 0; i < CurrentPosition; i++)
 		{
 			tempcopy[i] = temp[i];
@@ -124,14 +122,23 @@ int main()
 		}
 		else
 		{
-			_CrtDumpMemoryLeaks();
-			for (size_t i = 0; i < monsterCount; i++)
+			//_CrtDumpMemoryLeaks();
+			for (size_t i = 0; i < monsterCount-1; i++)
 			{
 				delete[] monsterPosition[i];
 			}
-			delete [] monsterPosition;
-			delete [] NameOfMonsters;
-			delete [] MonsterLifeTime;
+			delete[] monsterPosition;
+			MonsterNameNode = NameOfMonsters->Gethead();
+			while (MonsterNameNode->Next)
+			{
+				EngineLib::Node<char*>* temp = MonsterNameNode;
+				MonsterNameNode = MonsterNameNode->Next;
+				delete[] temp->Data;
+				delete[] temp;
+			}
+			delete[] MonsterNameNode;
+			delete[] NameOfMonsters;
+			delete[] MonsterLifeTime;
 			printf("\nYou die at (%d, %d), please press 'q' to quit\n", playerPosition.X, playerPosition.Y);
 			c = gets_s(tempInput, 5)[0];
 			if (c != 'q') {
@@ -156,7 +163,6 @@ char* DoubleSizeBlock(int &InitilizeSize, int CurrentPosition, char* SourceChar)
 		temp2[i] = SourceChar[i];
 	}
 	delete[] SourceChar;
-	printf("size: %d\n", strlen(temp2));
 	return temp2;
 }
 
@@ -244,13 +250,18 @@ void UpdateMovement(char input) {
 			{
 				printf("\nMonster %s died!\n", MonsterNameNode->Data);
 				delete[] monsterPosition[i];
+				EngineLib::Node<char*>* deletetemp = MonsterNameNode;
+				if (MonsterNameNode->Next != nullptr)
+				{
+					MonsterNameNode = MonsterNameNode->Next;
+				}
+				NameOfMonsters->DeleteList(deletetemp->Data);
 				GenerateNewMonster(i);
 			}
 			if (MonsterNameNode->Next != nullptr)
 			{
 				MonsterNameNode = MonsterNameNode->Next;
 			}
-			
 		}
 
 		CheckCollision();
@@ -274,7 +285,6 @@ void GenerateNewMonster(int _i) {
 
 	printf("New Monster: %s appears!\n\n", temp);
 	newMonsterCount++;
-	delete[] temp;
 }
 
 void CheckCollision() {

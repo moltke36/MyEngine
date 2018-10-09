@@ -41,7 +41,7 @@ namespace EngineLib
 				}
 				if (p->Data == aData) //若有结点a
 				{
-					q->Next = s;
+					q = s;
 					s->Next = p;
 				}
 				else   //若没有结点a；
@@ -55,14 +55,14 @@ namespace EngineLib
 
 		void DeleteList(T aData) //链表结点的删除
 		{
-			Node*p, *q; //p用于指向结点a,q用于指向结a的前一个结点
+			Node<T>* p, *q = nullptr; //p用于指向结点a,q用于指向结a的前一个结点
 			p = Head;
 			if (p == NULL) //若是空表
 				return;
 			if (p->Data == aData) //若a是第一个结点
 			{
 				Head = p->Next;
-				delete p;
+				delete[] p;
 			}
 			else
 			{
@@ -74,7 +74,7 @@ namespace EngineLib
 				if (p->Data == aData) //若有结点a
 				{
 					q->Next = p->Next;
-					delete p;
+					delete[] p;
 				}
 			}
 		}
