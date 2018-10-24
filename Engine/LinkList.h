@@ -30,7 +30,7 @@ namespace EngineLib
 				return temp;
 			}
 		};
-	public:
+		public:
 
 		//初始化器和析构函数
 		LinkedList();

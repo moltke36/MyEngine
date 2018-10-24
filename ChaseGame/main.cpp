@@ -11,7 +11,7 @@ const int BOUNDARY = 50;
 // fields
 bool gameOver = false;
 int monsterCount;
-EngineLib::LinkedList<char*>* NameOfMonsters;
+EngineLib::LinkedList<char>* NameOfMonsters;
 EngineLib::Node<char*>* MonsterNameNode;
 char* myName = new char[64];
 EngineLib::Point2D playerPosition(0);
@@ -41,7 +41,7 @@ int main()
 			printf("Invalid Input! Please enter a number.\n");
 	} while (monsterCount <= 0);
 	//_CrtSetBreakAlloc(73);
-	NameOfMonsters = new EngineLib::LinkedList<char*>();
+	NameOfMonsters = new EngineLib::LinkedList<char>();
 	//NameOfMonsters = new char*[monsterCount]();
 	MonsterLifeTime = new EngineLib::LinkedList<int>();
 	//monsterLifeTime = new int[monsterCount]();
@@ -220,8 +220,8 @@ void UpdateMovement(char input) {
 			int deltaX = playerPosition.X - monsterPosition[i][0];
 			int deltaY = playerPosition.Y - monsterPosition[i][1];
 			if (MonsterLifeTime->get(i) > 0) {
-				MonsterLifeTime->get(i)--;
-				LifeTimeNode = LifeTimeNode->Next;
+				int* MonsterLifetemp = MonsterLifeTime->get(i);
+				MonsterLifetemp--;
 
 				if (abs(deltaX) >= abs(deltaY)) {
 					if (deltaX > 0)
@@ -239,22 +239,13 @@ void UpdateMovement(char input) {
 			}
 			else
 			{
-				printf("\nMonster %s died!\n", MonsterNameNode->Data);
+				printf("\nMonster %s died!\n", NameOfMonsters->get(i));
 				delete[] monsterPosition[i];
 				EngineLib::Node<char*>* deletetemp = MonsterNameNode;
-				if (MonsterNameNode->Next != nullptr)
-				{
-					MonsterNameNode = MonsterNameNode->Next;
-				}
-				NameOfMonsters->DeleteList(deletetemp->Data);
+				NameOfMonsters->remove(i);
 				GenerateNewMonster(i);
 			}
-			if (MonsterNameNode->Next != nullptr)
-			{
-				MonsterNameNode = MonsterNameNode->Next;
-			}
 		}
-
 		CheckCollision();
 	}
 
@@ -264,10 +255,10 @@ void GenerateNewMonster(int _i) {
 
 	char* temp = new char[64];
 	// new life time
-	MonsterLifeTime->InsertList(rand() % 10 + 5);
+	MonsterLifeTime->add(new int(rand() % 10 + 5));
 	// new respawn name
 	sprintf_s(temp, 64, "NewMonster%d", newMonsterCount);
-	NameOfMonsters->InsertList(temp);
+	NameOfMonsters->add(temp);
 	// init X pos
 	monsterPosition[_i][0] = rand() % BOUNDARY - BOUNDARY / 2;
 	// init Y pos
