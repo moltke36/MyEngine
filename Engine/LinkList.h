@@ -1,95 +1,55 @@
 #pragma once
 
+
+
 namespace EngineLib
 {
-	template <typename T>
+	template<class Any>
 	struct Node
 	{
-		T Data;
-		Node* Next;
+		Node<Any> * prior;
+		Any * data;
+		Node<Any> * next;
 	};
 
-	template <typename T>
-	class list
+	template<class Any>
+	class LinkedList
 	{
-		Node<T>*Head;
+		Node<Any> * head;//头结点
+		Node<Any> * tail;//尾结点
+		int length;//链表长度
+		Node<Any> * getNode(int index)
+		{
+			//获得index位置的结点数据
+			if (index<0 || index>length) {
+				return NULL;
+			}
+			else {
+				Node<Any> *temp = head->next;
+				for (int i = 0; i < index; i++, temp = temp->next);
+				return temp;
+			}
+		};
 	public:
-		list() { Head = nullptr; }
 
-		void InsertList(T bData, T aData=NULL)//链表结点的插入
-		{
-			Node<T>* p, *q = nullptr, *s;
-			s = (Node<T>*)new(Node<T>); //动态分配一个新结点
-			s->Data = bData;   //设b为此结点 
-			p = Head;
-			
-			if (Head == nullptr) //若是空表，使b作为第一个结点
-			{
-				Head = s;
-				s->Next = nullptr;
-			}
-			else if (aData == Head->Data)
-			{
-				s->Next = p; // s的下个节点改成aData
-				Head = s;
-			}
-			else
-			{
-				while (p->Data != aData && p->Next != nullptr) //查找结点a
-				{
-					p = p->Next;
-				}
-				if (p->Data == aData) //若有结点a
-				{
-					q = s;
-					s->Next = p;
-				}
-				else   //若没有结点a；
-				{
-					p->Next = s;
-					s->Next = nullptr;
-				}
-			}
-			//delete[] s;
-		}
+		//初始化器和析构函数
+		LinkedList();
+		~LinkedList();
 
-		void DeleteList(T aData) //链表结点的删除
-		{
-			Node<T>* p, *q = nullptr; //p用于指向结点a,q用于指向结a的前一个结点
-			p = Head;
-			if (p == NULL) //若是空表
-				return;
-			if (p->Data == aData) //若a是第一个结点
-			{
-				Head = p->Next;
-				delete[] p;
-			}
-			else
-			{
-				while (p->Data != aData && p->Next != NULL) //查找结点a
-				{
-					q = p;
-					p = p->Next;
-				}
-				if (p->Data == aData) //若有结点a
-				{
-					q->Next = p->Next;
-					delete[] p;
-				}
-			}
-		}
-
-		void Outputlist()//链表结点的输出
-		{
-			Node*current = Head;
-			while (current != NULL)
-			{
-				cout << current->Data << " ";
-				current = current->Next;
-			}
-			cout << endl;
-		}
-
-		Node<T>*Gethead() { return Head; }
+		void add(Any*  data);//添加数据
+		Any * get(int index);//获取index位置上的数据
+		bool add(int index, Any*  data);//向index位置上添加一条数据
+		void addFirst(Any* data);//向链表头部添加一条数据
+		void addLast(Any* data);//向链表尾部添加一条数据
+		Any * remove(int index);//移除index位置上的数据
+		Any * removeFirst();//移除链表第一个元素
+		Any * removeLast();//移除链表最后一个元素
+		int size();//获得链表的长度
+				   //stack
+		Any * pop();//出栈一条数据
+		void push(Any * data);//入栈一条数据
+							  //queue
+		void in(Any * data);//进入队列
+		Any * out();//出队列
 	};
-}
+};

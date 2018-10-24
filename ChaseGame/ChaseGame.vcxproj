@@ -23,6 +23,7 @@
     <ProjectGuid>{2F56A2CA-699F-4891-9BCF-24CBCB11BB69}</ProjectGuid>
     <RootNamespace>ChaseEngine</RootNamespace>
     <ProjectName>ChaseGame</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

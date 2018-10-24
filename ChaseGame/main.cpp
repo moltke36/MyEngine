@@ -11,12 +11,12 @@ const int BOUNDARY = 50;
 // fields
 bool gameOver = false;
 int monsterCount;
-EngineLib::list<char*>* NameOfMonsters;
+EngineLib::LinkedList<char*>* NameOfMonsters;
 EngineLib::Node<char*>* MonsterNameNode;
 char* myName = new char[64];
-EngineLib::Point2D  playerPosition(0);
+EngineLib::Point2D playerPosition(0);
 int** monsterPosition;
-EngineLib::list<int>* MonsterLifeTime;
+EngineLib::LinkedList<int>* MonsterLifeTime;
 int newMonsterCount;
 
 // Methods
@@ -41,19 +41,17 @@ int main()
 			printf("Invalid Input! Please enter a number.\n");
 	} while (monsterCount <= 0);
 	//_CrtSetBreakAlloc(73);
-	NameOfMonsters = new EngineLib::list<char*>();
+	NameOfMonsters = new EngineLib::LinkedList<char*>();
 	//NameOfMonsters = new char*[monsterCount]();
-	MonsterLifeTime = new EngineLib::list<int>();
+	MonsterLifeTime = new EngineLib::LinkedList<int>();
 	//monsterLifeTime = new int[monsterCount]();
-	MonsterNameNode = NameOfMonsters->Gethead();
 	for (int i = 0; i < monsterCount; i++)
 	{
 
 		//cout << "Input the no." << i << " monster's name: "<<endl;
 		printf("Input the no.%d monster's name: ", i);
 
-
-		MonsterLifeTime->InsertList(rand() % 10 + 5);	// life time will be random from 5 to 15
+		MonsterLifeTime->add(new int(rand() % 10 + 5));	// life time will be random from 5 to 15
 		int CurrentPosition = 0;
 		int InitilizeSize = 2;
 		char* temp = new char[InitilizeSize+1];
@@ -79,7 +77,7 @@ int main()
 		//char* tempcopy = new char[strlen(temp)];
 		//strcpy_s(tempcopy, strlen(temp)+2,temp);
 		
-			NameOfMonsters->InsertList(tempcopy);
+			NameOfMonsters->add(tempcopy);
 		printf("temp: %s\n", tempcopy);
 		//printf("size: %d\n", sizeof(temp));
 		//delete[] temp;
@@ -89,11 +87,11 @@ int main()
 
 	// display all monsters' name
 	printf("You get ");
-	MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
-	for (MonsterNameNode; MonsterNameNode != nullptr; MonsterNameNode = MonsterNameNode->Next)
+	//MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
+	for (int i = 0; i < NameOfMonsters->size(); i++)
 	{
 		// print all name in the console
-		printf("%s ", MonsterNameNode->Data);
+		printf("%s ", NameOfMonsters->get(i));
 	}
 	printf(", totally %d monsters in the scene.\nPlease input your name: ", monsterCount);
 	gets_s(myName, 64);
@@ -128,14 +126,7 @@ int main()
 				delete[] monsterPosition[i];
 			}
 			delete[] monsterPosition;
-			MonsterNameNode = NameOfMonsters->Gethead();
-			while (MonsterNameNode->Next)
-			{
-				EngineLib::Node<char*>* temp = MonsterNameNode;
-				MonsterNameNode = MonsterNameNode->Next;
-				delete[] temp->Data;
-				delete[] temp;
-			}
+			delete NameOfMonsters;
 			delete[] MonsterNameNode;
 			delete[] NameOfMonsters;
 			delete[] MonsterLifeTime;
@@ -180,11 +171,11 @@ void InitMonsters() {
 }
 void PrintPositionInfo() {
 	printf("You are in (%d,%d). Monsters ara in: \n", playerPosition.X, playerPosition.Y);
-	MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
+	//MonsterNameNode = NameOfMonsters->Gethead();  // Reset Node Point of MonsterName
 	for (size_t i = 0; i < monsterCount; i++)
 	{
 
-		printf("%s: (%d, %d) ", MonsterNameNode->Data, monsterPosition[i][0], monsterPosition[i][1]);
+		printf("%s: (%d, %d) ", NameOfMonsters->get(i), monsterPosition[i][0], monsterPosition[i][1]);
 		if (i == monsterCount - 1)
 			printf("\n");
 	}
@@ -222,14 +213,14 @@ void UpdateMovement(char input) {
 	CheckCollision();
 	if (!gameOver) {
 		// update monster position
-		EngineLib::Node<int>* LifeTimeNode = MonsterLifeTime->Gethead();
-		MonsterNameNode = NameOfMonsters->Gethead();
+		//EngineLib::Node<int>* LifeTimeNode = MonsterLifeTime->Gethead();
+		//MonsterNameNode = NameOfMonsters->Gethead();
 		for (int i = 0; i < monsterCount; i++)
 		{
 			int deltaX = playerPosition.X - monsterPosition[i][0];
 			int deltaY = playerPosition.Y - monsterPosition[i][1];
-			if (LifeTimeNode->Data > 0) {
-				LifeTimeNode->Data--;
+			if (MonsterLifeTime->get(i) > 0) {
+				MonsterLifeTime->get(i)--;
 				LifeTimeNode = LifeTimeNode->Next;
 
 				if (abs(deltaX) >= abs(deltaY)) {
